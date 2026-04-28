@@ -2,6 +2,8 @@ import { prisma } from '@/lib/prisma'
 import EventCard from '@/components/events/EventCard'
 import ExploreFilters from './ExploreFilters'
 
+export const dynamic = 'force-dynamic'
+
 async function getEvents(search?: string, category?: string) {
   return prisma.event.findMany({
     where: {

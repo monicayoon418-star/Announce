@@ -2,6 +2,8 @@ import { prisma } from '@/lib/prisma'
 import MapClient from '@/components/map/MapClient'
 import Link from 'next/link'
 
+export const dynamic = 'force-dynamic'
+
 async function getActiveEvents() {
   const today = new Date()
   today.setHours(0, 0, 0, 0)

@@ -24,16 +24,6 @@ export default function MapClient({ events }: { events: Event[] }) {
         </div>
       </div>
 
-      {/* 이벤트 없을 때 안내 */}
-      {events.length === 0 && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl px-5 py-4 text-center shadow">
-            <p className="text-2xl mb-1">🗺️</p>
-            <p className="text-sm text-gray-500">등록된 이벤트가 없어요</p>
-          </div>
-        </div>
-      )}
-
       <EventDetailSheet />
     </div>
   )

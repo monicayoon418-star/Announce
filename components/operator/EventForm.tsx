@@ -220,13 +220,15 @@ export default function EventForm({ initialData, eventId }: Props) {
           <div className="mt-1.5 flex items-center gap-2">
             <input
               {...register('openTime')}
-              type="time"
+              type="text"
+              placeholder="11:00"
               className="flex-1 px-3 py-3 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-pink-300"
             />
             <span className="text-gray-400 font-medium">~</span>
             <input
               {...register('closeTime')}
-              type="time"
+              type="text"
+              placeholder="21:00"
               className="flex-1 px-3 py-3 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-pink-300"
             />
           </div>

@@ -5,22 +5,26 @@ import ExploreFilters from './ExploreFilters'
 export const dynamic = 'force-dynamic'
 
 async function getEvents(search?: string, category?: string) {
-  return prisma.event.findMany({
-    where: {
-      status: { not: 'hidden' },
-      ...(category ? { category: category as 'birthday' | 'exhibition' | 'popup' } : {}),
-      ...(search
-        ? {
-            OR: [
-              { title: { contains: search, mode: 'insensitive' } },
-              { artist: { contains: search, mode: 'insensitive' } },
-              { address: { contains: search, mode: 'insensitive' } },
-            ],
-          }
-        : {}),
-    },
-    orderBy: { createdAt: 'desc' },
-  })
+  try {
+    return await prisma.event.findMany({
+      where: {
+        status: { not: 'hidden' },
+        ...(category ? { category: category as 'birthday' | 'exhibition' | 'popup' } : {}),
+        ...(search
+          ? {
+              OR: [
+                { title: { contains: search, mode: 'insensitive' } },
+                { artist: { contains: search, mode: 'insensitive' } },
+                { address: { contains: search, mode: 'insensitive' } },
+              ],
+            }
+          : {}),
+      },
+      orderBy: { createdAt: 'desc' },
+    })
+  } catch {
+    return []
+  }
 }
 
 export default async function ExplorePage({

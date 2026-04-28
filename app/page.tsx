@@ -1,6 +1,5 @@
 import { prisma } from '@/lib/prisma'
 import MapClient from '@/components/map/MapClient'
-import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
 
@@ -22,21 +21,10 @@ export default async function HomePage() {
 
   return (
     <div className="flex flex-col bg-white" style={{ height: 'calc(100vh - 64px)' }}>
-      {/* 헤더 */}
-      <div className="flex-shrink-0 bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between z-30">
-        <div className="flex items-center gap-1.5">
-          <h1 className="text-xl font-bold text-pink-500">어나운스</h1>
-          <span className="text-xs bg-pink-100 text-pink-600 px-1.5 py-0.5 rounded-full font-medium">β</span>
-        </div>
-        <Link
-          href="/operator/login"
-          className="text-xs text-gray-400 border border-gray-200 px-3 py-1.5 rounded-full"
-        >
-          운영자 입장
-        </Link>
+      <div className="flex-shrink-0 bg-white border-b border-gray-100 px-4 py-3 flex items-center z-30">
+        <h1 className="text-xl font-bold text-pink-500">어나운스</h1>
+        <span className="ml-1.5 text-xs bg-pink-100 text-pink-600 px-1.5 py-0.5 rounded-full font-medium">β</span>
       </div>
-
-      {/* 지도 */}
       <div className="flex-1 relative overflow-hidden">
         <MapClient events={JSON.parse(JSON.stringify(events))} />
       </div>

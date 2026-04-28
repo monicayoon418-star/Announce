@@ -5,33 +5,39 @@ import Link from 'next/link'
 export const dynamic = 'force-dynamic'
 
 async function getActiveEvents() {
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  return prisma.event.findMany({
-    where: { status: { not: 'hidden' }, endDate: { gte: today } },
-    orderBy: { createdAt: 'desc' },
-  })
+  try {
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    return await prisma.event.findMany({
+      where: { status: { not: 'hidden' }, endDate: { gte: today } },
+      orderBy: { createdAt: 'desc' },
+    })
+  } catch {
+    return []
+  }
 }
 
 export default async function HomePage() {
   const events = await getActiveEvents()
 
   return (
-    <div className="relative h-screen bg-gray-100 overflow-hidden">
-      <div className="absolute top-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-sm">
-        <div className="flex items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-1.5">
-            <h1 className="text-xl font-bold text-pink-500">어나운스</h1>
-            <span className="text-xs bg-pink-100 text-pink-600 px-1.5 py-0.5 rounded-full font-medium">β</span>
-          </div>
-          <Link href="/explore" className="text-sm text-gray-500 flex items-center gap-1">
-            <span>🔍</span>
-            <span>탐색</span>
-          </Link>
+    <div className="flex flex-col bg-white" style={{ height: 'calc(100vh - 64px)' }}>
+      {/* 헤더 */}
+      <div className="flex-shrink-0 bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between z-30">
+        <div className="flex items-center gap-1.5">
+          <h1 className="text-xl font-bold text-pink-500">어나운스</h1>
+          <span className="text-xs bg-pink-100 text-pink-600 px-1.5 py-0.5 rounded-full font-medium">β</span>
         </div>
+        <Link
+          href="/operator/login"
+          className="text-xs text-gray-400 border border-gray-200 px-3 py-1.5 rounded-full"
+        >
+          운영자 입장
+        </Link>
       </div>
 
-      <div className="absolute inset-0 top-14">
+      {/* 지도 */}
+      <div className="flex-1 relative overflow-hidden">
         <MapClient events={JSON.parse(JSON.stringify(events))} />
       </div>
     </div>

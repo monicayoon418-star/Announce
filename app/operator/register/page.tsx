@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { registerSchema, RegisterFormData } from '@/lib/validations'
 import Link from 'next/link'
+import { signIn } from 'next-auth/react'
 
 export default function OperatorRegisterPage() {
   const router = useRouter()
@@ -19,17 +20,32 @@ export default function OperatorRegisterPage() {
   const onSubmit = async (data: RegisterFormData) => {
     setIsLoading(true)
     setError('')
+
     const res = await fetch('/api/operator/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     })
+
     const result = await res.json()
+
     if (!res.ok) {
       setError(result.error ?? '오류가 발생했습니다')
       setIsLoading(false)
-    } else {
+      return
+    }
+
+    // 회원가입 성공 후 자동 로그인
+    const loginResult = await signIn('credentials', {
+      email: data.email,
+      password: data.password,
+      redirect: false,
+    })
+
+    if (loginResult?.error) {
       router.push('/operator/login?registered=true')
+    } else {
+      router.push('/operator/dashboard')
     }
   }
 
@@ -73,14 +89,18 @@ export default function OperatorRegisterPage() {
             {errors.password && <p className="mt-1 text-xs text-red-500">{errors.password.message}</p>}
           </div>
 
-          {error && <p className="text-sm text-red-500 text-center">{error}</p>}
+          {error && (
+            <div className="p-3 bg-red-50 text-red-600 text-sm rounded-2xl text-center">
+              {error}
+            </div>
+          )}
 
           <button
             type="submit"
             disabled={isLoading}
             className="w-full py-3.5 bg-pink-500 text-white rounded-2xl font-bold text-sm disabled:opacity-60 mt-2"
           >
-            {isLoading ? '가입 중...' : '회원가입'}
+            {isLoading ? '처리 중...' : '회원가입'}
           </button>
         </form>
 

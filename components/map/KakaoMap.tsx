@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef, useCallback, useState } from 'react'
 import Script from 'next/script'
 import { Event, CATEGORY_COLORS, CATEGORY_EMOJI } from '@/types'
 import { useStore } from '@/store/useStore'
@@ -14,6 +14,7 @@ export default function KakaoMap({ events }: KakaoMapProps) {
   const mapInstanceRef = useRef<kakao.maps.Map | null>(null)
   const overlaysRef = useRef<kakao.maps.CustomOverlay[]>([])
   const { setSelectedEvent } = useStore()
+  const [mapReady, setMapReady] = useState(false)
 
   const renderMarkers = useCallback(
     (map: kakao.maps.Map) => {
@@ -59,6 +60,7 @@ export default function KakaoMap({ events }: KakaoMapProps) {
         level: 7,
       })
       mapInstanceRef.current = map
+      setMapReady(true)
       renderMarkers(map)
     })
   }, [renderMarkers])
@@ -67,14 +69,37 @@ export default function KakaoMap({ events }: KakaoMapProps) {
     if (mapInstanceRef.current) renderMarkers(mapInstanceRef.current)
   }, [events, renderMarkers])
 
+  const handleCurrentLocation = () => {
+    if (!navigator.geolocation || !mapInstanceRef.current) return
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const position = new kakao.maps.LatLng(pos.coords.latitude, pos.coords.longitude)
+        mapInstanceRef.current!.setCenter(position)
+        mapInstanceRef.current!.setLevel(4)
+      },
+      () => alert('위치 정보를 가져올 수 없습니다.')
+    )
+  }
+
   return (
-    <>
+    <div className="relative w-full h-full">
       <Script
         src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_KEY}&autoload=false`}
         onLoad={initMap}
         strategy="afterInteractive"
       />
       <div ref={mapRef} className="w-full h-full" />
-    </>
+
+      {/* GPS 버튼 */}
+      {mapReady && (
+        <button
+          onClick={handleCurrentLocation}
+          className="absolute bottom-6 right-4 z-20 w-11 h-11 bg-white rounded-full shadow-lg flex items-center justify-center text-xl border border-gray-100"
+          title="현재 위치"
+        >
+          📍
+        </button>
+      )}
+    </div>
   )
 }
